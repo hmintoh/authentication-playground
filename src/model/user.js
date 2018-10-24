@@ -46,5 +46,11 @@ userSchema.plugin(uniqueValidator, {
   message: "should be unique"
 });
 
+//validPassword method, checks input password with hash val in db
+//returns a bool
+userSchema.methods.validPassword = function(password) {
+  return this.passwordHash === hashPassword(password, this.passwordSalt);
+};
+
 const User = mongoose.model("User", userSchema);
 module.exports = User;

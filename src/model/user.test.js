@@ -125,7 +125,7 @@ describe("validations for password field", () => {
   const user5 = new User({ username: username5, email: email5 });
   user5.save();
 
-  test("should save passwords into hash and salt fields of user model", async () => {
+  test("should save passwords into hash and salt fields of user model", () => {
     expect(user5.passwordHash).toBeUndefined();
     expect(user5.passwordSalt).toBeUndefined();
 
@@ -135,5 +135,9 @@ describe("validations for password field", () => {
     expect(user5.passwordSalt).not.toBeNull();
     expect(user5.passwordHash).toBeDefined();
     expect(user5.passwordHash).not.toBeNull();
+  });
+
+  test("should be able to verify user password afterwards", () => {
+    expect(user5.validPassword(password)).toBeTruthy();
   });
 });
