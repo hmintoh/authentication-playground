@@ -29,4 +29,26 @@ describe("user login", () => {
     expect(res.body.user.token).toBeDefined();
     expect(res.body.user.token).not.toBeNull();
   });
+
+  test("to login with invalid email", async () => {
+    const email = "bogus@gmail.com";
+    let password = user.password;
+    let res = await request(app)
+      .post("/api/user/login")
+      .send({ user: { email: email, password: password } });
+
+    expect(res.status).toBe(401);
+    expect(res.body.error.message).toEqual("email or password is invalid");
+  });
+
+  test("to login with invalid password", async () => {
+    const email = user.email;
+    let password = "bogus";
+    let res = await request(app)
+      .post("/api/user/login")
+      .send({ user: { email: email, password: password } });
+
+    expect(res.status).toBe(401);
+    expect(res.body.error.message).toEqual("email or password is invalid");
+  });
 });
