@@ -22,4 +22,24 @@ async function registerNewUser(req, res) {
     .json({ user: { username: user.username, email: user.email } });
 }
 
+// user login
+router.post("/login", asyncWrap(userLogin));
+
+async function userLogin(req, res) {
+  const email = req.body.user.email;
+  const password = req.body.user.password;
+
+  const user = await User.findOne({ email: email });
+  if (!user || !user.validPassword(password)) {
+    return res
+      .status(401)
+      .json({ error: { message: "email or password is invalid" } });
+  }
+  //generate JWT and return token as JSON response
+  const token = user.generateJWT();
+  return res.json({
+    user: { username: user.username, email: user.email, token: token }
+  });
+}
+
 module.exports = router;
