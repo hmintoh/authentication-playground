@@ -24,6 +24,8 @@ if (process.env.NODE_ENV === "development") {
 // routes
 const indexRouter = require("./routes/index");
 app.use("/", indexRouter);
+const userRouter = require("./routes/user_api");
+app.use("/api/user", userRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -2,6 +2,8 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 const uniqueValidator = require("mongoose-unique-validator");
 const crypto = require("crypto");
+const jwt = require("jsonwebtoken");
+const { secret } = require("../../config/jwt");
 
 const userSchema = new Schema({
   username: {
@@ -50,6 +52,31 @@ userSchema.plugin(uniqueValidator, {
 //returns a bool
 userSchema.methods.validPassword = function(password) {
   return this.passwordHash === hashPassword(password, this.passwordSalt);
+};
+
+//generate JWT token
+userSchema.methods.generateJWT = function() {
+  //constructor
+  const today = new Date();
+  //set exp to 60 days from today in seconds
+  const exp = new Date().setDate(today.getDate() + 60) / 1000;
+  return jwt.sign(
+    {
+      userid: this._id,
+      username: this.username,
+      exp: exp
+    },
+    secret
+  );
+};
+
+userSchema.methods.verifyJWT = function(token) {
+  try {
+    jwt.verify(token, secret);
+    return true;
+  } catch (error) {
+    return false;
+  }
 };
 
 const User = mongoose.model("User", userSchema);
