@@ -6,7 +6,8 @@ const express = require("express"),
   errorhandler = require("errorhandler"),
   status = require("http-status"),
   morgan = require("morgan"),
-  logger = require("./logger");
+  logger = require("./logger"),
+  cookieparser = require("cookie-parser");
 
 const isProduction = process.env.NODE_ENV === "production";
 
@@ -20,6 +21,7 @@ app.use(bodyParser.json());
 if (process.env.NODE_ENV === "development") {
   app.use(errorhandler());
 }
+app.use(cookieparser());
 
 // routes
 const indexRouter = require("./routes/index");
