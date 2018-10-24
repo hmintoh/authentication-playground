@@ -10,14 +10,17 @@ jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;
 
 const mongoServer = new mongodbMemoryServer();
 
-const setup = () => {
+const setup = async () => {
   const mongoURI = await mongoServer.getConnectionString();
   await mongoose
-    .connect(mongoURI, {useNewUrlParser: true})
-    .then(
-      () => console.log("database is ready"), 
-      error => console.error(error)
+    .connect(
+      mongoURI,
+      { useNewUrlParser: true }
     )
+    .then(
+      () => console.log("database is ready"),
+      error => console.error(error)
+    );
 };
 
 const teardown = () => {
