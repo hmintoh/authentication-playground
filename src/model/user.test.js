@@ -79,6 +79,28 @@ describe("unique fields in User model", () => {
   });
 });
 
+describe.skip("Fields in User model to be case-insensitive", () => {
+  test("username is case insensitive", async () => {
+    const usernameInUpperCase = new User({
+      username: user.username.toUpperCase(),
+      email: "min3@gmail.com"
+    });
+    await expect(usernameInUpperCase.save()).rejects.toThrow(
+      "username: should be unique"
+    );
+  });
+
+  test.skip("email is case insensitive", async () => {
+    const emailInUpperCase = new User({
+      username: "min3",
+      email: user.email.toUpperCase()
+    });
+    await expect(emailInUpperCase.save()).rejects.toThrow(
+      "email: should be unique"
+    );
+  });
+});
+
 describe("email and username is required", async () => {
   test("username is missing", async () => {
     const usernameIsMissing = new User({
@@ -92,5 +114,26 @@ describe("email and username is required", async () => {
       username: "min@gmail.com"
     });
     await expect(emailIsMissing.save()).rejects.toThrow("is required");
+  });
+});
+
+describe("validations for password field", () => {
+  const username5 = "min5";
+  const email5 = "min5@gmail.com";
+  const password = "my password";
+
+  const user5 = new User({ username: username5, email: email5 });
+  user5.save();
+
+  test("should save passwords into hash and salt fields of user model", async () => {
+    expect(user5.passwordHash).toBeUndefined();
+    expect(user5.passwordSalt).toBeUndefined();
+
+    user5.setPassword(password);
+
+    expect(user5.passwordSalt).toBeDefined();
+    expect(user5.passwordSalt).not.toBeNull();
+    expect(user5.passwordHash).toBeDefined();
+    expect(user5.passwordHash).not.toBeNull();
   });
 });
