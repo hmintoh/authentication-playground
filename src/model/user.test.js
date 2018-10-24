@@ -78,3 +78,19 @@ describe("unique fields in User model", () => {
     );
   });
 });
+
+describe("email and username is required", async () => {
+  test("username is missing", async () => {
+    const usernameIsMissing = new User({
+      email: "min4@gmail.com"
+    });
+    await expect(usernameIsMissing.save()).rejects.toThrow("is required");
+  });
+
+  test("email is missing", async () => {
+    const emailIsMissing = new User({
+      username: "min@gmail.com"
+    });
+    await expect(emailIsMissing.save()).rejects.toThrow("is required");
+  });
+});
