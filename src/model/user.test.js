@@ -1,6 +1,7 @@
 const test_mongodb = require("../../test_helper/in_memory_mongodb_setup");
 const User = require("./user");
 
+//start and end server after all, instantiate user beforeEach
 beforeAll(test_mongodb.setup);
 afterAll(test_mongodb.teardown);
 
@@ -36,9 +37,14 @@ describe("User model", () => {
   });
 
   test("can be updated", async () => {
-    user.username = "min updated";
-    await user.save();
-    const searchResult = await User.findOne({ _id: user._id });
+    // user.username = "min updated";
+    // await user.save();
+    // const searchResult = await User.findOne({_id: user._id});
+    const searchResult = await User.findByIdAndUpdate(
+      user._id,
+      { username: "min updated" },
+      { new: true }
+    );
     expect(searchResult.username).toEqual("min updated");
   });
 
@@ -46,5 +52,29 @@ describe("User model", () => {
     await user.remove();
     const searchResult = await User.findOne({ _id: user._id });
     expect(searchResult).toBeNull();
+  });
+});
+
+describe("unique fields in User model", () => {
+  test("should not allow same 2 emails to be saved", async () => {
+    const newEmail = "min2@gmail.com";
+    const newUserWithSameUsername = new User({
+      username: user.username,
+      email: newEmail
+    });
+    await expect(newUserWithSameUsername.save()).rejects.toThrow(
+      "email: should be unique"
+    );
+  });
+
+  test("should not allow same 2 usernames to be saved", async () => {
+    const newUsername = "min2";
+    const newUserWithSameEmail = new User({
+      username: newUsername,
+      email: user.email
+    });
+    await expect(newUserWithSameEmail.save()).rejects.toThrow(
+      "username: should be unique"
+    );
   });
 });
