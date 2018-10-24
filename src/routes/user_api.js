@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../model/user");
+const jwt_validation = require("../middleware/jwt_middleware");
 
 const asyncWrap = fn => (req, res, next) => {
   Promise.resolve(fn(req, res, next)).catch(error => next(error));
@@ -37,9 +38,35 @@ async function userLogin(req, res) {
   }
   //generate JWT and return token as JSON response
   const token = user.generateJWT();
-  return res.json({
-    user: { username: user.username, email: user.email, token: token }
+  // return res.json({
+  //   user: { username: user.username, email: user.email, token: token }
+  // });
+  res.cookie("jwt", token, {
+    httpOnly: true,
+    sameSite: true
   });
+  return res.json({
+    user: { username: user.username, email: user.email }
+  });
+}
+
+router.put(
+  "/change_password",
+  jwt_validation.required,
+  asyncWrap(changePassword)
+);
+
+async function changePassword(req, res) {
+  const userId = req.user.userid;
+  const user = await User.findById(userId);
+
+  const newUserProfile = req.body.user;
+  if (newUserProfile.password) {
+    user.setPassword(newUserProfile.password);
+  }
+
+  await user.save();
+  return res.json({ status: "done" });
 }
 
 module.exports = router;
