@@ -70,3 +70,11 @@ async function changePassword(req, res) {
 }
 
 module.exports = router;
+
+// user logout
+router.post("/logout", asyncWrap(logout));
+
+async function logout(req, res) {
+  res.clearCookie("jwt");
+  res.json({ status: "done" });
+}

@@ -13,6 +13,14 @@ const isProduction = process.env.NODE_ENV === "production";
 
 const app = express();
 
+//db connection
+//TODO: add MONGODB_URI in env
+const mongoose = require("mongoose");
+const isMongooseConnectionProvided = process.env.NODE_ENV === "integration";
+if (!isMongooseConnectionProvided) {
+  mongoose.connect(process.env.MONGODB_URI);
+}
+
 // middlewares
 app.use(cors());
 app.use(morgan("dev"));

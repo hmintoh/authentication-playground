@@ -79,8 +79,8 @@ describe("unique fields in User model", () => {
   });
 });
 
-describe.skip("Fields in User model to be case-insensitive", () => {
-  test("username is case insensitive", async () => {
+describe("Fields in User model to be case-insensitive", () => {
+  test.skip("username is case insensitive", async () => {
     const usernameInUpperCase = new User({
       username: user.username.toUpperCase(),
       email: "min3@gmail.com"
