@@ -7,14 +7,14 @@ const express = require("express"),
   status = require("http-status"),
   morgan = require("morgan"),
   logger = require("./logger"),
-  cookieparser = require("cookie-parser");
+  cookieparser = require("cookie-parser"),
+  passport = require("../src/middleware/passport_middleware");
 
 const isProduction = process.env.NODE_ENV === "production";
 
 const app = express();
 
 //db connection
-//TODO: add MONGODB_URI in env
 const mongoose = require("mongoose");
 const isMongooseConnectionProvided = process.env.NODE_ENV === "integration";
 if (!isMongooseConnectionProvided) {
@@ -30,6 +30,7 @@ if (process.env.NODE_ENV === "development") {
   app.use(errorhandler());
 }
 app.use(cookieparser());
+app.use(passport.initialize());
 
 // routes
 const indexRouter = require("./routes/index");
